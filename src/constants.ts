@@ -1,7 +1,7 @@
 import JSBI from 'jsbi'
 
 // exports for external consumption
-export type BigintIsh = JSBI | bigint | string
+export { BigintIsh } from '@ubeswap/token-math'
 
 export enum ChainId {
   MAINNET = 42220,
