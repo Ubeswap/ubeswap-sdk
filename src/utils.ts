@@ -20,7 +20,7 @@ export function validateAndParseAddress(address: string): string {
   }
 }
 
-export function parseBigintIsh(bigintIsh: BigintIsh): JSBI {
+export function parseBigintIsh(bigintIsh: BigintIsh | bigint): JSBI {
   return bigintIsh instanceof JSBI
     ? bigintIsh
     : typeof bigintIsh === 'bigint'

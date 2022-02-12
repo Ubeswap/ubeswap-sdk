@@ -5,10 +5,10 @@ env:
 on:
   pull_request:
     branches:
-      - v2
+      - main
   push:
     branches:
-      - v2
+      - main
 
 jobs:
   test:
@@ -20,8 +20,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
 

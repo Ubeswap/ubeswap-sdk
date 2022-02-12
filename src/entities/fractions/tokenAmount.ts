@@ -1,3 +1,4 @@
+import { Fraction } from '@ubeswap/token-math'
 import _Big from 'big.js'
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
@@ -5,20 +6,19 @@ import toFormat from 'toformat'
 import { BigintIsh, Rounding, SolidityType, TEN } from '../../constants'
 import { parseBigintIsh, validateSolidityTypeInstance } from '../../utils'
 import { Token } from '../token'
-import { Fraction } from './fraction'
 
 const Big = toFormat(_Big)
 
-class CurrencyAmount extends Fraction {
-  public readonly currency: Token
+export class TokenAmount extends Fraction {
+  public readonly token: Token
 
   // amount _must_ be raw, i.e. in the native representation
-  protected constructor(currency: Token, amount: BigintIsh) {
+  public constructor(token: Token, amount: BigintIsh) {
     const parsedAmount = parseBigintIsh(amount)
     validateSolidityTypeInstance(parsedAmount, SolidityType.uint256)
 
-    super(parsedAmount, JSBI.exponentiate(TEN, JSBI.BigInt(currency.decimals)))
-    this.currency = currency
+    super(parsedAmount, JSBI.exponentiate(TEN, JSBI.BigInt(token.decimals)))
+    this.token = token
   }
 
   public get raw(): JSBI {
@@ -34,27 +34,17 @@ class CurrencyAmount extends Fraction {
   }
 
   public toFixed(
-    decimalPlaces: number = this.currency.decimals,
+    decimalPlaces: number = this.token.decimals,
     format?: object,
     rounding: Rounding = Rounding.ROUND_DOWN
   ): string {
-    invariant(decimalPlaces <= this.currency.decimals, 'DECIMALS')
+    invariant(decimalPlaces <= this.token.decimals, 'DECIMALS')
     return super.toFixed(decimalPlaces, format, rounding)
   }
 
   public toExact(format: object = { groupSeparator: '' }): string {
-    Big.DP = this.currency.decimals
+    Big.DP = this.token.decimals
     return new Big(this.numerator.toString()).div(this.denominator.toString()).toFormat(format)
-  }
-}
-
-export class TokenAmount extends CurrencyAmount {
-  public readonly token: Token
-
-  // amount _must_ be raw, i.e. in the native representation
-  public constructor(token: Token, amount: BigintIsh) {
-    super(token, amount)
-    this.token = token
   }
 
   public add(other: TokenAmount): TokenAmount {
